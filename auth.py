@@ -22,7 +22,7 @@ def login(username, password, lt):
         'lt': lt,
         'execution': 'e1s1',
         '_eventId': 'submit',
-        'submit': 'ログイン'
+        'submit': 'ログイン',
     }
     return session.post(login_url, data=login_data)
 
@@ -44,4 +44,45 @@ res_login = login(args.ID, args.password, get_lt_value())
 # セッション情報を取得してみる
 res_session = session.get(base_url + '/session' + '.json')
 
+# ログイン状態を確認
 print(f"logged in as: {res_session.json()['session_collection'][0]['userEid']}")
+
+# params_site = {
+#     '_limit': 50,
+# }
+# res_site = session.get(base_url + '/site' + '.json', params=params_site)
+# for site in res_site.json()['site_collection']:
+#     print(site['title'], site['id'])
+
+# test: 配布資料を示すID
+id = 'ae7eb08f-5eab-41d2-a8d8-229aac826b97'
+
+# サイトのすべてのディレクトリ/ファイルを取得
+# res_content = session.get(base_url + '/content' + '/site' + '/' + id + '.json')
+# for site in res_content.json()['content_collection']:
+#     print(site['title'])
+
+res_content = session.get(base_url + '/content' + '/resources' + '/' + id + '.json')
+
+# カレントディレクトリの項目
+for site in res_content.json()['content_collection']:
+    print(f"|--{site['name']}")
+    for child in site['resourceChildren']:
+        # 各childが項目を持つなら，それを取得
+
+        if (child['type'] == 'org.sakaiproject.content.types.folder'):
+            resource_id = child['resourceId']
+            res_content_child = session.get(base_url + '/content' + '/resources' + resource_id + '.json')
+            # print(res_content_child.text)
+            for site_child in res_content_child.json()['content_collection']:
+                # if (site_child['type'] == 'org.sakaiproject.content.types.folder'):
+                #     for site_grand_child in site_child['resourceChildren']:
+                #         print("  ", end='')
+                #         print(f"|--{site_grand_child['name']}")
+                #     else:
+                #         print("  ", end='')
+                #         print(f"|--{site_child['name']}")
+                    print("  ", end='')
+                    print(f"|--{site_child['name']}")
+        else:
+            print(f"|--{site['name']}")
