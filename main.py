@@ -61,11 +61,12 @@ def download(site_id):
     print('Downloading...')
     for content in res_site.json()['content_collection']:
         if (content['type'] != 'collection'):
-            data = urllib.request.urlopen(content['url']).read()
+            # data = urllib.request.urlopen(content['url']).read()
             os.makedirs('save' + content['container'], exist_ok=True)
             try:
                 with open('save' + content['container'] + content['title'], mode='xb') as f:
-                    f.write(data)
+                    res_file = session.get(content['url'])
+                    f.write(res_file.content)
                     print(f'Download: {content['title']}')
             except FileExistsError:
                 # print(f'Pass: {content['title']}')

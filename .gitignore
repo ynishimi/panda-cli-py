@@ -4,3 +4,4 @@ include
 lib
 save
 pyvenv.cfg
+.DS_Store
